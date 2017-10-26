@@ -9,14 +9,14 @@
 
 #include "BinaryTree.h"
 
-template <class T>
+template<class T>
 class BinarySearchTree : BinaryTree<T> {
 private:
     int size;
-    TreeNode<T>* root;
+    TreeNode<T> *root;
 
-    int Height(TreeNode<T>* node) {
-        if(node == nullptr) {
+    int Height(TreeNode<T> *node) {
+        if (node == nullptr) {
             return 0;
         }
         return 1 + max(Height(node->GetLeft()), Height(node->GetRight()));
@@ -24,7 +24,7 @@ private:
 
     /* Traversals */
     void PrintInOrder(TreeNode<T> *pNode) {
-        if(pNode != nullptr) {
+        if (pNode != nullptr) {
             cout << pNode->GetData() << endl;
             PrintInOrder(pNode->GetLeft());
             PrintInOrder(pNode->GetRight());
@@ -32,7 +32,7 @@ private:
     }
 
     void PrintPreOrder(TreeNode<T> *pNode) {
-        if(pNode != nullptr) {
+        if (pNode != nullptr) {
             PrintPreOrder(pNode->GetLeft());
             cout << pNode->GetData() << endl;
             PrintPreOrder(pNode->GetRight());
@@ -40,7 +40,7 @@ private:
     }
 
     void PrintPostOrder(TreeNode<T> *pNode) {
-        if(pNode != nullptr) {
+        if (pNode != nullptr) {
             PrintPostOrder(pNode->GetLeft());
             PrintPostOrder(pNode->GetRight());
             cout << pNode->GetData() << endl;
@@ -49,12 +49,12 @@ private:
 
     /* We do not allow for duplicates when adding */
     void Add(T data, TreeNode<T> *pNode) {
-        TreeNode<T>* node = new TreeNode<T>(data);
+        TreeNode<T> *node = new TreeNode<T>(data);
 
         int cmp = node->CompareTo(pNode);
 
-        if(cmp < 0) {
-            if(node->GetLeft() != nullptr) {
+        if (cmp < 0) {
+            if (node->GetLeft() != nullptr) {
                 Add(data, node->GetLeft());
             } else {
                 node->SetParent(pNode);
@@ -62,14 +62,16 @@ private:
                 size++;
             }
         } else if (cmp > 0) {
-            if(node->GetRight() != nullptr) {
+            if (node->GetRight() != nullptr) {
                 Add(data, node->GetRight());
             } else {
                 node->SetParent(pNode);
                 pNode->SetRight(node);
+                size++;
             }
         }
     }
+
 public:
     explicit BinarySearchTree<T>() {
         root = nullptr;
@@ -90,7 +92,7 @@ public:
     }
 
     void Add(T data) override {
-        if(root != nullptr) {
+        if (root != nullptr) {
             Add(data, root);
         } else {
             root = new TreeNode<T>(data);
@@ -119,14 +121,14 @@ public:
     }
 
     void PrintLevelOrder() override { /* Level-by-level */
-        vector<TreeNode<T>*> queue;
+        vector<TreeNode<T> *> queue;
         queue.emplace_back(root);
         int size = queue.size();
-        while(size == 0) {
-            for(TreeNode<T>* node : queue) {
+        while (size == 0) {
+            for (TreeNode<T> *node : queue) {
                 cout << node->GetData() << "\t";
             }
-            for(int i = size; i > 0; i++) {
+            for (int i = size; i > 0; i++) {
                 queue.erase(queue.front());
             }
             size = queue.size();
