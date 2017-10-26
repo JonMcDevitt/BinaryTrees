@@ -12,6 +12,10 @@ private:
     TreeNode<T> *left, *right, *parent;
 
 public:
+    explicit TreeNode<T>(T data) : T(data) {
+        left = right = parent = nullptr;
+    }
+
     TreeNode<T>* GetLeft() {
         return left;
     }
@@ -28,20 +32,49 @@ public:
         return data;
     }
 
-    void setData(T data) {
+    void SetData(T data) {
         this->data = data;
     }
 
-    void setLeft(TreeNode<T>* left) {
+    void SetLeft(TreeNode<T>* left) {
         this->left = left;
     }
 
-    void setRight(TreeNode<T>* right) {
+    void SetRight(TreeNode<T>* right) {
         this->right = right;
     }
 
-    void setParent(TreeNode<T>* parent) {
+    void SetParent(TreeNode<T>* parent) {
         this->parent = parent;
+    }
+
+    bool operator == (const TreeNode<T>* node) const {
+        return this->data == node->data;
+    }
+
+    bool operator <= (const TreeNode<T>* node) {
+        return this->data <= node->data;
+    }
+
+    bool operator >= (const TreeNode<T>* node) {
+        return this->data >= node->data;
+    }
+
+    bool operator < (const TreeNode<T>* node) {
+        return this->data < node->data;
+    }
+
+    bool operator > (const TreeNode<T>* node) {
+        return this->data > node->data;
+    }
+
+    int CompareTo(TreeNode<T>* node) {
+        if(this < node) {
+            return -1;
+        } else if(this > node) {
+            return 1;
+        }
+        return 0;
     }
 };
 
