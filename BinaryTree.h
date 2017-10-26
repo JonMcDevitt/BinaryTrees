@@ -14,11 +14,13 @@ using namespace std;
 
 template <class T>
 class BinaryTree {
+protected:
+public:
     virtual int Size() = 0;
     virtual int Height() = 0;
     virtual void Add(T data) = 0;
     virtual T Remove(T data) = 0;
-    virtual TreeNode<T>* FindNode() = 0;
+    virtual TreeNode<T>* FindNode(T data, TreeNode<T>* node) = 0;
     virtual bool IsBalanced() = 0;
 
     /* Traversals */

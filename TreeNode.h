@@ -16,6 +16,13 @@ public:
         left = right = parent = nullptr;
     }
 
+    explicit TreeNode<T>(TreeNode<T>* node) {
+        left = node->GetLeft();
+        right = node->GetRight();
+        parent = node->GetParent();
+        data = node->GetData();
+    }
+
     TreeNode<T>* GetLeft() {
         return left;
     }

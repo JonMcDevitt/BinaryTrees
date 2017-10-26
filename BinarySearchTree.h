@@ -72,6 +72,51 @@ private:
         }
     }
 
+    T RemoveCaseZero(TreeNode<T>* node, bool isLeft, TreeNode<T>* parent) {
+        if(left) {
+            parent->SetLeft(nullptr);
+        } else {
+            parent->SetRight(nullptr);
+        }
+        node->SetParent(nullptr);
+    }
+
+    T RemoveCaseOne(TreeNode<T>* node, bool isLeft, TreeNode<T>* parent) {
+        if(left) {
+            parent->SetLeft(node->GetLeft());
+        } else {
+            parent->SetRight(node->GetLeft());
+        }
+        node->GetLeft()->SetParent(parent);
+
+        node->SetLeft(nullptr);
+        node->SetParent(nullptr);
+    }
+
+    T RemoveCaseTwo(TreeNode<T>* node, bool isLeft, TreeNode<T>* parent) {
+        if(left) {
+            parent->SetLeft(node->GetRight());
+        } else {
+            parent->SetRight(node->GetRight());
+        }
+        node->GetRight()->SetParent(parent);
+
+        node->SetParent(nullptr);
+        node->SetRight(nullptr);
+    }
+
+    void Swap(TreeNode<T>* node1, TreeNode<T>* node2) {
+        TreeNode<T>* temp = new TreeNode<T>(node1);
+
+        node1->SetLeft(node2->GetLeft());
+        node1->SetRight(node2->GetRight());
+        node1->SetParent(node2->GetParent());
+
+        node2->SetLeft(temp->GetLeft());
+        node2->SetRight(temp->GetRight());
+        node2->SetParent(temp->GetParent());
+    }
+
 public:
     explicit BinarySearchTree<T>() {
         root = nullptr;
@@ -100,11 +145,59 @@ public:
     }
 
     T Remove(T data) override {
-        return nullptr;
+        TreeNode<T> *node = FindNode(data, root);
+
+        /* Data not found */
+        if (node == nullptr) {
+            return NULL;
+        }
+
+        TreeNode<T>* parent = node->GetParent();
+
+        /* Is it the left or right child? */
+        bool left = (node == parent->GetLeft());
+
+        /* Cases */
+        /* Case 0: node has no children */
+        if(node->GetLeft() == nullptr && node->GetRight() == nullptr) {
+            RemoveCaseZero(node, left, parent);
+        }
+
+        /* Case 1: node has only a left child */
+        if(node->GetLeft() != nullptr && node->GetRight() == nullptr) {
+            RemoveCaseOne(node, left, parent);
+        }
+
+        /* Case 2: node has only a right child */
+        if(node->GetLeft() == nullptr && node->GetRight() != nullptr) {
+            RemoveCaseTwo(node, left, parent);
+        }
+
+        /* Case 3: node has a left and right child */
+        if(node->GetLeft() != nullptr && node->GetRight() != nullptr) {
+            TreeNode<T>* min = node->GetRight()->GetLeft();
+            while(min->GetLeft() != nullptr) min = min->GetLeft();
+
+            Swap(node, min);
+            parent = node->GetParent();
+            if(node->GetLeft() == nullptr) {
+                if(node->GetRight() == nullptr) {
+                    return RemoveCaseZero(node, true, parent);
+                }
+            }
+        }
     }
 
-    TreeNode<T> *FindNode() override {
-        return nullptr;
+    TreeNode<T> *FindNode(T data, TreeNode<T> *node) override {
+        int cmp = data == node->GetData();
+
+        if (cmp > 0) {
+            return FindNode(data, node->GetRight());
+        } else if (cmp < 0) {
+            return FindNode(data, node->GetLeft());
+        } else {
+            return node;
+        }
     }
 
     /* Traversals */
@@ -128,6 +221,7 @@ public:
             for (TreeNode<T> *node : queue) {
                 cout << node->GetData() << "\t";
             }
+            cout << endl;
             for (int i = size; i > 0; i++) {
                 queue.erase(queue.front());
             }
