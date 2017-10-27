@@ -12,11 +12,12 @@ private:
     TreeNode<T> *left, *right, *parent;
 
 public:
-    explicit TreeNode<T>(T data) : T(data) {
+    explicit TreeNode(T data) {
+        this->data = data;
         left = right = parent = nullptr;
     }
 
-    explicit TreeNode<T>(TreeNode<T>* node) {
+    explicit TreeNode(TreeNode<T>* node) {
         left = node->GetLeft();
         right = node->GetRight();
         parent = node->GetParent();
@@ -76,9 +77,9 @@ public:
     }
 
     int CompareTo(TreeNode<T>* node) {
-        if(this < node) {
+        if(data < node->data) {
             return -1;
-        } else if(this > node) {
+        } else if(data > node->data) {
             return 1;
         }
         return 0;

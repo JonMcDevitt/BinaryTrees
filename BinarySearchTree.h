@@ -48,27 +48,28 @@ private:
     }
 
     /* We do not allow for duplicates when adding */
-    void Add(T data, TreeNode<T> *pNode) {
-        TreeNode<T> *node = new TreeNode<T>(data);
+    void Add(TreeNode<T>* node, TreeNode<T> *pNode) {
 
         int cmp = node->CompareTo(pNode);
 
         if (cmp < 0) {
-            if (node->GetLeft() != nullptr) {
-                Add(data, node->GetLeft());
+            if (pNode->GetLeft() != nullptr) {
+                Add(node, pNode->GetLeft());
             } else {
                 node->SetParent(pNode);
                 pNode->SetLeft(node);
                 size++;
             }
         } else if (cmp > 0) {
-            if (node->GetRight() != nullptr) {
-                Add(data, node->GetRight());
+            if (pNode->GetRight() != nullptr) {
+                Add(node, pNode->GetRight());
             } else {
                 node->SetParent(pNode);
                 pNode->SetRight(node);
                 size++;
             }
+        } else {
+            cout << "Duplicate value entered." << endl;
         }
     }
 
@@ -118,12 +119,12 @@ private:
     }
 
 public:
-    explicit BinarySearchTree<T>() {
+    explicit BinarySearchTree() {
         root = nullptr;
         size = 0;
     }
 
-    explicit BinarySearchTree<T>(T data) {
+    explicit BinarySearchTree(T data) {
         root = new TreeNode<T>(data);
         size = 1;
     }
@@ -138,9 +139,11 @@ public:
 
     void Add(T data) override {
         if (root != nullptr) {
-            Add(data, root);
+            TreeNode<T>* node = new TreeNode<T>(data);
+            Add(node, root);
         } else {
             root = new TreeNode<T>(data);
+            size++;
         }
     }
 
@@ -149,7 +152,7 @@ public:
 
         /* Data not found */
         if (node == nullptr) {
-            return NULL;
+            return 0;
         }
 
         TreeNode<T>* parent = node->GetParent();
@@ -217,16 +220,27 @@ public:
         vector<TreeNode<T> *> queue;
         queue.emplace_back(root);
         int size = queue.size();
-        while (size == 0) {
+        while (size != 0) {
             for (TreeNode<T> *node : queue) {
                 cout << node->GetData() << "\t";
+                if(node->GetLeft() != nullptr) {
+                    queue.emplace_back(node->GetLeft());
+                }
+                if(node->GetRight() != nullptr) {
+                    queue.emplace_back(node->GetRight());
+                }
             }
             cout << endl;
-            for (int i = size; i > 0; i++) {
-                queue.erase(queue.front());
+            for(int i = 0; i < size; i++) {
+                auto front = (vector<TreeNode<int>*>::const_iterator)queue.begin();
+                queue.erase(front);
             }
             size = queue.size();
         }
+    }
+
+    bool IsBalanced() override {
+        return false;
     }
 };
 
