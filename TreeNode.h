@@ -10,11 +10,15 @@ class TreeNode {
 private:
     T data;
     TreeNode<T> *left, *right, *parent;
+    int height; /* The number of levels our subtree goes down */
+    int weight; /* The combined weights of our subtrees and ourselves */
 
 public:
     explicit TreeNode(T data) {
         this->data = data;
         left = right = parent = nullptr;
+        height = 1;
+        weight = 1;
     }
 
     explicit TreeNode(TreeNode<T>* node) {
@@ -40,6 +44,14 @@ public:
         return data;
     }
 
+    int GetHeight() const {
+        return height;
+    }
+
+    int GetWeight() const {
+        return weight;
+    }
+
     void SetData(T data) {
         this->data = data;
     }
@@ -54,6 +66,14 @@ public:
 
     void SetParent(TreeNode<T>* parent) {
         this->parent = parent;
+    }
+
+    void IncWeight() {
+        weight++;
+    }
+
+    void IncHeight() {
+        height++;
     }
 
     bool operator == (const TreeNode<T>* node) const {
@@ -83,6 +103,26 @@ public:
             return 1;
         }
         return 0;
+    }
+
+    void DecWeight() {
+        weight--;
+    }
+
+    void ResetWeight() {
+        weight = 1;
+    }
+
+    void AddWeight(int num) {
+        weight += num;
+    }
+
+    void ResetHeight() {
+        height = 1;
+    }
+
+    void AddHeight(int num) {
+        height += num;
     }
 };
 
