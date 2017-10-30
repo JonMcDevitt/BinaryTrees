@@ -118,6 +118,8 @@ private:
                 for(TreeNode<T>* temp = pNode; temp != nullptr; temp = temp->GetParent()) {
                     temp->IncWeight();
                 }
+
+                return pNode->GetLeft() == nullptr;
             }
         } else {
             return false;
@@ -125,7 +127,7 @@ private:
     }
 
     T RemoveCaseZero(TreeNode<T>* node, bool isLeft, TreeNode<T>* parent) {
-        if(left) {
+        if(isLeft) {
             parent->SetLeft(nullptr);
         } else {
             parent->SetRight(nullptr);
@@ -174,6 +176,22 @@ private:
             return 0;
         }
         return 1 + CountNodes(pNode->GetLeft()) + CountNodes(pNode->GetRight());
+    }
+
+    TreeNode<T> *FindNode(T data, TreeNode<T> *node) override {
+        if(node == nullptr) {
+            return nullptr;
+        }
+
+        int cmp = (new TreeNode<T>(data))->CompareTo(node);
+
+        if (cmp > 0) {
+            return FindNode(data, node->GetRight());
+        } else if (cmp < 0) {
+            return FindNode(data, node->GetLeft());
+        } else {
+            return node;
+        }
     }
 
 public:
@@ -269,20 +287,8 @@ public:
         return retData;
     }
 
-    TreeNode<T> *FindNode(T data, TreeNode<T> *node) override {
-        if(node == nullptr) {
-            return nullptr;
-        }
-
-        int cmp = data == node->GetData();
-
-        if (cmp > 0) {
-            return FindNode(data, node->GetRight());
-        } else if (cmp < 0) {
-            return FindNode(data, node->GetLeft());
-        } else {
-            return node;
-        }
+    TreeNode<T>* FindNode(T data) {
+        return FindNode(data, root);
     }
 
     /* Traversals */
