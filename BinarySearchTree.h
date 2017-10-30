@@ -9,6 +9,9 @@
 
 #include "BinaryTree.h"
 
+template <class T>
+class BinarySearchTree;
+
 template<class T>
 class BinarySearchTree : BinaryTree<T> {
 private:
@@ -208,7 +211,7 @@ public:
     void Add(T data) override {
         if (root != nullptr) {
             TreeNode<T>* node = new TreeNode<T>(data);
-            bool newLevel = Add(node, root, 1, max(root->GetLeft()->GetHeight(), root->GetRight()->GetHeight()));
+            bool newLevel = Add(node, root, 1, root->GetHeight());
             if(newLevel) root->IncHeight();
         } else {
             root = new TreeNode<T>(data);

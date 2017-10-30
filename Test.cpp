@@ -14,10 +14,13 @@ int main() {
     uniform_int_distribution<int> dist(1, 100);
 
     /* Test adding and fill up tree. */
+    cout << "Adding to tree" << endl;
     for(int i = 1; i <= 20; i++) {
         int val = dist(generator);
         numbers->Add(val);
     }
+
+    cout << "Done adding" << endl;
 
     numbers->PrintLevelOrder();
 
