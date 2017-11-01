@@ -14,6 +14,12 @@ private:
     int weight; /* The combined weights of our subtrees and ourselves */
 
 public:
+    explicit TreeNode() {
+        data = NULL;
+        left = right = parent = nullptr;
+        height = weight = 0;
+    }
+
     explicit TreeNode(T data) {
         this->data = data;
         left = right = parent = nullptr;

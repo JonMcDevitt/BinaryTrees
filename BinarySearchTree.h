@@ -17,8 +17,100 @@ class BinarySearchTree;
 
 template<class T>
 class BinarySearchTree : BinaryTree<T> {
-private:
+protected:
     TreeNode<T> *root;
+
+/** bool Add(TreeNode node, TreeNode pNode, int currHeight, int maxHeight)
+ *
+ *  Algorithm
+ *      Add a node to the tree. If the node's value exceeds the value of pNode, add to right; if the value is less
+ *      than the value of pNode, then add to the left. If it is a duplicate, discard.
+ *
+ *      --WE DO NOT ALLOW FOR DUPLICATES IN THIS BINARY TREE--
+ *
+ *      Problem 1: tracking whether a new level has been added at each level. Rather than brute force it and do a
+ *          recursive recalculation, it is best to update it in a single recursion. We track whether a new level
+ *          has been added by comparing the number of levels we have descended for the addition (currHeight) to the
+ *          current height of the tree. If we have descended further than the current height of the tree, then we
+ *          have added a new level.
+ *
+ *      Problem 2: Height and Balance are mutually exclusive. While the balance of a tree is based on the balance of
+ *          its subtrees, the height is updated separately from the balance.
+ *
+ *  @param TreeNode<T>* node - The node we want to add
+ *  @param TreeNode<T>* pNode - The node we are currently comparing to
+ *  @param int currHeight - Tracker for the number of levels we have traversed
+ *  @param int maxHeight - The height of the tree
+ * */
+bool Add(TreeNode<T> *node, TreeNode<T> *pNode, int currHeight, int maxHeight) {
+    if (pNode == nullptr) {
+        return false;
+    }
+
+    int cmp = node->CompareTo(pNode);
+    bool isNewLevel;
+    int currLevel;
+
+    if (cmp < 0) {
+        cout << "Adding " << node->GetData() << " to left of " << pNode->GetData() << endl;
+        if (pNode->GetLeft() != nullptr) {
+            currLevel = pNode->GetHeight();
+            isNewLevel = Add(node, pNode->GetLeft(), currHeight + 1, maxHeight);
+
+            if (isNewLevel) {
+                int leftHeight = pNode->GetLeft()->GetHeight(), rightHeight = 0;
+                if (pNode->GetRight() != nullptr) {
+                    rightHeight = pNode->GetRight()->GetHeight();
+                }
+                pNode->ResetHeight();
+                pNode->AddHeight(max(rightHeight, leftHeight));
+            }
+
+            return currLevel <= pNode->GetHeight();
+        } else {
+            pNode->SetLeft(node);
+            node->SetParent(pNode);
+
+            for (TreeNode<T> *temp = pNode; temp != nullptr; temp = temp->GetParent()) {
+                cout << temp->GetData() << ".weight++" << endl;
+                temp->IncWeight();
+            }
+
+            return pNode->GetRight() == nullptr;
+        }
+    } else if (cmp > 0) {
+        cout << "Adding " << node->GetData() << " to right of " << pNode->GetData() << endl;
+        if (pNode->GetRight() != nullptr) {
+            currLevel = pNode->GetHeight();
+            isNewLevel = Add(node, pNode->GetRight(), currHeight + 1, maxHeight);
+
+            if (isNewLevel) {
+                int leftHeight = 0, rightHeight = pNode->GetRight()->GetHeight();
+                if (pNode->GetLeft() != nullptr) {
+                    leftHeight = pNode->GetLeft()->GetHeight();
+                }
+                pNode->ResetHeight();
+                pNode->AddHeight(max(leftHeight, rightHeight));
+            }
+
+            return currLevel <= pNode->GetHeight();
+        } else {
+            pNode->SetRight(node);
+            node->SetParent(pNode);
+
+            for (TreeNode<T> *temp = pNode; temp != nullptr; temp = temp->GetParent()) {
+                cout << temp->GetData() << ".weight++" << endl;
+                temp->IncWeight();
+            }
+
+            return pNode->GetLeft() == nullptr;
+        }
+    } else {
+        return false;
+    }
+}
+
+private:
 
     /* Traversals */
     void PrintInOrder(TreeNode<T> *pNode) {
@@ -46,95 +138,6 @@ private:
     }
 
     /* Actual Functions */
-    /** bool Add(TreeNode node, TreeNode pNode, int currHeight, int maxHeight)
-     *
-     *  Algorithm
-     *      Add a node to the tree. If the node's value exceeds the value of pNode, add to right; if the value is less
-     *      than the value of pNode, then add to the left. If it is a duplicate, discard.
-     *
-     *      --WE DO NOT ALLOW FOR DUPLICATES IN THIS BINARY TREE--
-     *
-     *      Problem 1: tracking whether a new level has been added at each level. Rather than brute force it and do a
-     *          recursive recalculation, it is best to update it in a single recursion. We track whether a new level
-     *          has been added by comparing the number of levels we have descended for the addition (currHeight) to the
-     *          current height of the tree. If we have descended further than the current height of the tree, then we
-     *          have added a new level.
-     *
-     *      Problem 2: Height and Balance are mutually exclusive. While the balance of a tree is based on the balance of
-     *          its subtrees, the height is updated separately from the balance.
-     *
-     *  @param TreeNode<T>* node - The node we want to add
-     *  @param TreeNode<T>* pNode - The node we are currently comparing to
-     *  @param int currHeight - Tracker for the number of levels we have traversed
-     *  @param int maxHeight - The height of the tree
-     * */
-    bool Add(TreeNode<T> *node, TreeNode<T> *pNode, int currHeight, int maxHeight) {
-        if (pNode == nullptr) {
-            return false;
-        }
-
-        int cmp = node->CompareTo(pNode);
-        bool isNewLevel;
-        int currLevel;
-
-        if (cmp < 0) {
-            cout << "Adding " << node->GetData() << " to left of " << pNode->GetData() << endl;
-            if (pNode->GetLeft() != nullptr) {
-                currLevel = pNode->GetHeight();
-                isNewLevel = Add(node, pNode->GetLeft(), currHeight + 1, maxHeight);
-
-                if (isNewLevel) {
-                    int leftHeight = pNode->GetLeft()->GetHeight(), rightHeight = 0;
-                    if (pNode->GetRight() != nullptr) {
-                        rightHeight = pNode->GetRight()->GetHeight();
-                    }
-                    pNode->ResetHeight();
-                    pNode->AddHeight(max(rightHeight, leftHeight));
-                }
-
-                return currLevel <= pNode->GetHeight();
-            } else {
-                pNode->SetLeft(node);
-                node->SetParent(pNode);
-
-                for (TreeNode<T> *temp = pNode; temp != nullptr; temp = temp->GetParent()) {
-                    cout << temp->GetData() << ".weight++" << endl;
-                    temp->IncWeight();
-                }
-
-                return pNode->GetRight() == nullptr;
-            }
-        } else if (cmp > 0) {
-            cout << "Adding " << node->GetData() << " to right of " << pNode->GetData() << endl;
-            if (pNode->GetRight() != nullptr) {
-                currLevel = pNode->GetHeight();
-                isNewLevel = Add(node, pNode->GetRight(), currHeight + 1, maxHeight);
-
-                if (isNewLevel) {
-                    int leftHeight = 0, rightHeight = pNode->GetRight()->GetHeight();
-                    if (pNode->GetLeft() != nullptr) {
-                        leftHeight = pNode->GetLeft()->GetHeight();
-                    }
-                    pNode->ResetHeight();
-                    pNode->AddHeight(max(leftHeight, rightHeight));
-                }
-
-                return currLevel <= pNode->GetHeight();
-            } else {
-                pNode->SetRight(node);
-                node->SetParent(pNode);
-
-                for (TreeNode<T> *temp = pNode; temp != nullptr; temp = temp->GetParent()) {
-                    cout << temp->GetData() << ".weight++" << endl;
-                    temp->IncWeight();
-                }
-
-                return pNode->GetLeft() == nullptr;
-            }
-        } else {
-            return false;
-        }
-    }
 
     T RemoveCaseZero(TreeNode<T> *node, bool isLeft, TreeNode<T> *parent) {
         if (isLeft) {
@@ -236,13 +239,15 @@ public:
      *
      *  @param T - the data we are adding to the tree
      * */
-    void Add(T data) override {
+    TreeNode<T>* Add(T data) override {
         if (root != nullptr) {
             TreeNode<T> *node = new TreeNode<T>(data);
             bool newLevel = Add(node, root, 1, root->GetHeight());
             if (newLevel) root->IncHeight();
+            return node;
         } else {
             root = new TreeNode<T>(data);
+            return root;
         }
     }
 
@@ -301,7 +306,7 @@ public:
         return retData;
     }
 
-    TreeNode<T> *FindNode(T data) {
+    virtual TreeNode<T> *FindNode(T data) {
         return FindNode(data, root);
     }
 
